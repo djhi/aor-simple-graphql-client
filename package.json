@@ -1,16 +1,20 @@
 {
-  "name": "aor-simple-graphql-client",
-  "version": "0.0.5",
-  "description": "A simple GraphQL client for admin-on-rest",
-  "main": "./lib/index.js",
-  "repository": "https://github.com/djhi/aor-simple-graphql-client.git",
+  "name": "aor-graph-cool-client",
+  "version": "0.1.16",
+  "description": "A graph.cool client for admin-on-rest",
+  "main": "lib/index.js",
+  "repository": "https://github.com/mulyoved/aor-simple-graphql-client.git",
   "author": "Gildas Garcia",
   "license": "MIT",
+  "files": [
+    "*.md",
+    "lib"
+  ],
   "scripts": {
-    "build": "make build",
+    "build": "rm -rf lib && cross-env NODE_ENV=production ./node_modules/.bin/babel --out-dir=lib --stage=0 --ignore=*.spec.js src",
     "clean": "make clean",
-    "prepublish": "make build",
-    "test": "make test",
+    "prepublish": "rm -rf lib && cross-env NODE_ENV=production ./node_modules/.bin/babel --out-dir=lib --stage=0 --ignore=*.spec.js src",
+    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --opts ./mocha.opts \"./src/**/*.spec.js\"",
     "watch-test": "make watch-test"
   },
   "devDependencies": {

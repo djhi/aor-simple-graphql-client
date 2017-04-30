@@ -12,6 +12,7 @@ export default client =>
      */
     (type, apolloParams) => {
         if (QUERY_TYPES.includes(type)) {
+            console.log('aor-gc query', type, apolloParams);
             return client.query({
                 ...apolloParams,
                 fetchPolicy: 'network-only',

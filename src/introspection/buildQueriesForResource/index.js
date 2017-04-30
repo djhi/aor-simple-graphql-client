@@ -8,17 +8,19 @@ import {
 } from '../../constants';
 
 import buildQuery from './buildQuery';
+import pluralize from 'pluralize';
 
 export const defaultTypes = {
     [GET_LIST]: {
         name: GET_LIST,
         returnsFields: true,
         query: (operationName, fields) => gql`
-        query ${operationName}($page: Int, $perPage: Int, $sortField: String, $sortOrder: String, $filter: String) {
-            ${operationName}(page: $page, perPage: $perPage, sortField: $sortField, sortOrder: $sortOrder, filter: $filter) {
-                items { ${fields} }
-                totalCount
+        query ${operationName}($skip: Int, $first: Int, $orderBy: ${operationName}OrderBy, $filter: ${operationName}Filter) {
+            items: all${pluralize(operationName)}(skip: $skip, first: $first, orderBy: $orderBy, filter: $filter) {
+                ${fields.fields}
             }
+            
+            totalCount: _all${pluralize(operationName)}Meta(filter: $filter) {count} 
         }`,
     },
     [GET_ONE]: {
@@ -27,7 +29,7 @@ export const defaultTypes = {
         query: (operationName, fields) => gql`
         query ${operationName}($id: ID!) {
             ${operationName}(id: $id) {
-                ${fields}
+                ${fields.fields}
             }
         }`,
     },
@@ -35,9 +37,9 @@ export const defaultTypes = {
         name: CREATE,
         returnsFields: true,
         query: (operationName, fields) => gql`
-        mutation ${operationName}($data: String!) {
-            ${operationName}(data: $data) {
-                ${fields}
+        mutation ${operationName}(${fields.fieldsAsParam}) {
+            ${operationName}(${fields.fieldsAsValues}) {
+                ${fields.fields}
             }
         }`,
     },
@@ -45,9 +47,9 @@ export const defaultTypes = {
         name: UPDATE,
         returnsFields: true,
         query: (operationName, fields) => gql`
-        mutation ${operationName}($data: String!) {
-            ${operationName}(data: $data) {
-                ${fields}
+        mutation ${operationName}(${fields.fieldsAsParam}) {
+            ${operationName}(${fields.fieldsAsValues}) {
+              ${fields.fields}
             }
         }`,
     },
@@ -56,7 +58,9 @@ export const defaultTypes = {
         returnsFields: false,
         query: operationName => gql`
         mutation ${operationName}($id: ID!) {
-            ${operationName}(id: $id)
+            ${operationName}(id: $id) {
+                id
+            }
         }`,
     },
 };

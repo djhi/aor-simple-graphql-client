@@ -29,30 +29,34 @@ export const buildGetListErrorMessage = resource =>
  */
 export default (response, type, resource, apolloParams) => {
     const { data } = response;
-    const dataKey = getApolloResultKey(type, apolloParams);
-    const dataForType = data[dataKey];
 
     switch (type) {
     case GET_LIST: {
-        if (typeof dataForType.totalCount !== 'number') {
+      const dataForType = data;
+        if (typeof dataForType.totalCount.count !== 'number') {
             throw new Error(buildGetListErrorMessage(resource));
         }
         return {
             data: dataForType.items.map(x => x),
-            total: dataForType.totalCount,
+            total: dataForType.totalCount.count,
         };
     }
 
     case GET_MANY:
     case GET_MANY_REFERENCE: {
-        if (dataForType.totalCount) {
+        const dataForType = data;
+        if (dataForType.totalCount && dataForType.totalCount.count) {
             return { data: dataForType.items.map(x => x) };
         }
 
         return { data: dataForType };
     }
 
-    default:
-        return { data: dataForType };
+    default: {
+      const dataKey = getApolloResultKey(type, apolloParams);
+      const dataForType = data[dataKey];
+
+      return {data: dataForType};
+    }
     }
 };
